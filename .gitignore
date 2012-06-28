@@ -1,0 +1,6 @@
+*/.settings/*
+trustcodesignatureapp/war/*
+!trustcodesignatureapp/war/*.css
+!trustcodesignatureapp/war/*.html
+!trustcodesignatureapp/war/web.xml
+trustcodesignatureapp/test-classes/*
