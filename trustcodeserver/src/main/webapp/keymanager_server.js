@@ -1,4 +1,4 @@
-if (typeof(keymng) == 'undefined') { keymng = {}; };
+var keymng = keymng || {};
 
 keymng.Server = function( source ) {
 	var that = this;
