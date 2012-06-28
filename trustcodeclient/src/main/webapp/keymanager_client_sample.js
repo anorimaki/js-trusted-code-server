@@ -5,8 +5,8 @@ function build() {
 	var signNode = document.createElement('p');
 	var signTextNode = document.createTextNode('Sign');
 	
-	var keyManagerClient = new keymng.Client( 'http://localhost:6080', 
-			'http://localhost:6080/trustcodeserver/keymanager.html' );
+	var keyManagerClient = new keymng.Client( 'http://trustcodeclient-anorimaki.rhcloud.com', 
+			'http://trustcodeserver-anorimaki.rhcloud.com/keymanager.html' );
 	
 	generateNode.appendChild( generateTextNode );
 	generateNode.onclick = function (){

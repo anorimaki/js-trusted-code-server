@@ -1,4 +1,4 @@
-if (typeof(keymng) == 'undefined') { keymng = {}; };
+var keymng = keymng || {};
 
 keymng.Client = function( origin, keyManagerUrl ) {
 	this._createFrame( keyManagerUrl );
