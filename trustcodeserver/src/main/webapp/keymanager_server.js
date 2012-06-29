@@ -3,6 +3,8 @@ var keymng = keymng || {};
 keymng.Server = function( source ) {
 	var that = this;
 	this.allowedSource = source;
+	this.crypto = new keymng.Crypto();
+	this.store = new keymng.Store();
 
 	function requestHandle(event) {
 		var data = event.data;
@@ -18,20 +20,9 @@ keymng.Server = function( source ) {
 
 keymng.Server.prototype.operationHandles = {
 	generate : function ( params ) {
-		var handle = this.keyGenerationHandles[params.algorithm];
-		if ( handle === undefined )
-			throw "Invalid generation algorithm: " + params.algorithm;
-		handle( event.keySpec );
+		var keyPair = this.crypto.generateKeyPair( params.algorithm, params.keySpec );
+		this.store.put( params.alias, keyPair.privateKey );
 	}
 };
-
-
-keymng.Server.prototype.keyGenerationHandles = {
-	RSA : function( keySpec ) {
-		alert( 'RSA generation' );
-	}
-};
-
-
 
 

@@ -13,10 +13,11 @@ keymng.Client = function( origin, keyManagerUrl ) {
 };
 
 
-keymng.Client.prototype.generateKeys = function( keySpec_ ) {
+keymng.Client.prototype.generateKeyPair = function( alias_, algorithm_, keySpec_ ) {
 	var operation = {
 		operation : 'generate',
-		algorithm : 'RSA',
+		alias : alias_,
+		algorithm : algorithm_,
 		keySpec : keySpec_
 	};
 	this._iframe.contentWindow.postMessage( operation, this._origin );
