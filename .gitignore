@@ -1,4 +1,6 @@
 */.settings/*
+trustcodesignatureapp/gwt-unitCache/*
+trustcodesignatureapp/src/com/pinguin/trustcode/public/*
 trustcodesignatureapp/war/*
 !trustcodesignatureapp/war/*.css
 !trustcodesignatureapp/war/*.html
