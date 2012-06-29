@@ -2,5 +2,5 @@
 trustcodesignatureapp/war/*
 !trustcodesignatureapp/war/*.css
 !trustcodesignatureapp/war/*.html
-!trustcodesignatureapp/war/web.xml
+!trustcodesignatureapp/war/WEB-INF/web.xml
 trustcodesignatureapp/test-classes/*
