@@ -1,34 +1,56 @@
-function GenerateKeyPairForm( where ) {
-	var algorithmListId = $(where).append( "<datalist>RSA</datalist>").uid();
-	$(name='algorithm').attr( "list", algorithmListId );
-	
+function GenerateKeyPairForm( where, applyResult ) {
 	var that = this;
+
+	var formNode = $( "form", where );
+	var algorithmNode = $('select[name="algorithm"]', formNode);
+	var keySizeNode = $('select[name="keySize"]', formNode);
+	
+	var fillKeySizeNode = function() {
+		$( "option", keySizeNode ).remove();
+		$.each( that._keySizes[algorithmNode.val()], function(index, value) {
+			keySizeNode.append( "<option>" + value + "</option>" );
+		});
+	};
+	
+	algorithmNode.append( "<option>RSA</option>" );
+	algorithmNode.change( fillKeySizeNode );
+	fillKeySizeNode();
 	
 	this.where = where;
-	this.result = null;
 	
 	$(this.where).dialog( {
 		autoOpen : false,
-		model : true,
+		modal : true,
 		height: 300,
 		width: 350,
 		buttons: {
 			Generate : function() {
-				var aliasValue = $( "#alias", where ).val; 
-				that.result = { 
-					alias : aliasValue
+				var aliasValue = $( 'input[name="alias"]', where ).val();
+				var algorithmValue = $(algorithmNode).val();
+				var lengthValue = keySizeNode.val();
+				var result = { 
+					alias : aliasValue,
+					algorithm : algorithmValue,
+					keySpec : {
+						length : lengthValue
+					}
 				};
-				this.dialog( "close" );
+				$(this).dialog( "close" );
+				applyResult( result );
 			},
 			Cancel : function() {
-				this.dialog( "close" );
+				$(this).dialog( "close" );
 			}
 		}
 	});
 }
 
+
 GenerateKeyPairForm.prototype.show = function() {
 	$(this.where).dialog( "open" );
-	return this.result;
 };
 
+
+GenerateKeyPairForm.prototype._keySizes = {
+	RSA : [512, 1024, 2048]
+};

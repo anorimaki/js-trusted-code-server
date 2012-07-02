@@ -10,16 +10,13 @@ keyManagement.init = function( where ){
 
 	
 keyManagement.completeInit = function( where, domForm ){
-	var form = new GenerateKeyPairForm( domForm );
+	var form = new GenerateKeyPairForm( domForm, function( formResult ) {
+			keyManagerClient.generateKeyPair( formResult.alias, formResult.algorihtm, formResult.keySpec );
+		});
 	
 	var generateButton = $( ".generateButton", where );
 	generateButton.button();
 	
-	generateButton.click( function() {
-		var formResult = form.show();
-		if ( formResult ) {
-			keyManagerClient.generateKeyPair( formResult.alias, formResult.algorihtm, formResult.keySpec );
-		}
-	});
+	generateButton.click( form.show );
 };
 
