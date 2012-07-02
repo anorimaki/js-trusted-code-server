@@ -1,5 +1,8 @@
 package com.pinguin.trustcode.client;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.smartgwt.client.data.DataSource;
 import com.smartgwt.client.data.Record;
 import com.smartgwt.client.data.fields.DataSourceIntegerField;
@@ -10,7 +13,9 @@ public class GenerationAlgorithmDataSource extends DataSource {
 	public static final String SIZE_FIELD = "keySize";
 	
 	private static GenerationAlgorithmDataSource instance = null;  
-	  
+	
+	public Set<String> algorithms;
+	
     public static GenerationAlgorithmDataSource getInstance() {  
         if (instance == null) {  
             instance = new GenerationAlgorithmDataSource("GenerationAlgorithmDataSource");  
@@ -18,7 +23,13 @@ public class GenerationAlgorithmDataSource extends DataSource {
         return instance;  
     }
     
-     private GenerationAlgorithmDataSource(String id) {  
+    public String[] getAlgorithms() {
+    	return algorithms.toArray( new String[0] );
+    }
+    
+    private GenerationAlgorithmDataSource(String id) { 
+    	algorithms = new HashSet<String>();
+    	
         setID(id);
         setClientOnly(true); 
   
@@ -41,5 +52,7 @@ public class GenerationAlgorithmDataSource extends DataSource {
         record.setAttribute( ALGORITHM_FIELD, algorithm );
         record.setAttribute( SIZE_FIELD, size );
         addData( record );  
+        
+        algorithms.add( algorithm );
 	}  
 }

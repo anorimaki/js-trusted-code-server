@@ -11,7 +11,6 @@
   <!-- <inherits name='com.google.gwt.user.theme.chrome.Chrome'/> -->
   <!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/>     -->
   <inherits name="com.smartgwt.SmartGwt"/>
-  <inherits name="com.gwtext.GwtExt"/>
 
   <!-- Other module inherits                                      -->
 
@@ -21,8 +20,5 @@
   <!-- Specify the paths for translatable code                    -->
   <source path='client'/>
   <source path='shared'/>
-  <stylesheet src="js/ext/resources/css/ext-all.css"/>
-  <script src="js/ext/adapter/ext/ext-base.js"/>
-  <script src="js/ext/ext-all.js"/>
 
 </module>

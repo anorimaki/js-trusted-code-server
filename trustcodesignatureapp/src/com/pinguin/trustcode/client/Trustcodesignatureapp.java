@@ -1,5 +1,7 @@
 package com.pinguin.trustcode.client;
 
+import java.security.spec.RSAPublicKeySpec;
+
 import com.pinguin.trustcode.shared.FieldVerifier;
 import com.smartgwt.client.widgets.layout.HLayout;
 import com.smartgwt.client.widgets.layout.VLayout;
@@ -32,6 +34,8 @@ public class Trustcodesignatureapp implements EntryPoint {
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
+		RSAPublicKeySpec aa = new RSAPublicKeySpec(null, null);
+		
 		Window.enableScrolling(false);
 		Window.setMargin("0px");
 		
