@@ -1,11 +1,50 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Insert title here</title>
-<script type="text/javascript" src="keymanager_client.js"></script>
-<script type="text/javascript" src="keymanager_client_sample.js"></script>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+	<link rel="stylesheet" type="text/css" href="./css/ui-lightness/jquery-ui-1.8.21.custom.css" />
+	
+	
+	<script type="text/javascript" src="./js/jquery-1.7.2.js"></script>
+	<script type="text/javascript" src="./js/jquery-ui-1.8.21.custom.min.js"></script>
+	<script type="text/javascript" src="./js/jquery-dropdown-tab-plugin.js"></script>
+	<script type="text/javascript" src="./js/jquery.unique-element-id.js"></script>
+	<script type="text/javascript" src="./js/keymanagerClient.js"></script>
+	<script type="text/javascript" src="./js/moduleLoader.js"></script>
 </head>
-<body onload="build();">
+<body>
+	<script>
+		var getHost = function(href) {
+		    var l = document.createElement("a");
+		    l.href = href;
+		    var ret = l.protocol + '//' + l.host ;
+		    return ret;
+		};
+	
+		function init(){
+			system.moduleLoader.load("menuTabs","#tabs");
+		}
+		$(document).ready(init());
+
+		var serverUrl = 'http://localhost:8180/trustcodeserver/keymanager.html';
+		var keyManagerClient = new keymng.Client( getHost(serverUrl), serverUrl );
+	</script>
+	
+	<div id="content" align="center">
+		<div id="wrapper_inner">
+			<div id="header">
+				<div id="header_content">
+					<img src="./images/logo.png" alt="Trust Code Client Sample"/>
+					<h1>Trust Code Client Sample</h1>
+				</div>
+				<hr>
+			</div>
+			<div id="tabs">
+			</div>
+			<div id="footer">
+				<p>©2012</p>
+			</div>
+		</div>
+	</div>
 </body>
 </html>
