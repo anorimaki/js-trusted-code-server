@@ -17,6 +17,8 @@ keyManagement.completeInit = function( where, domForm ){
 	var generateButton = $( ".generateButton", where );
 	generateButton.button();
 	
-	generateButton.click( form.show );
+	generateButton.click( function() {
+		form.show();
+	});
 };
 
