@@ -4,7 +4,7 @@ keymng.Server = function( source ) {
 	var that = this;
 	this.allowedSource = source;
 	this.crypto = new keymng.Crypto();
-	this.store = new keymng.Store();
+	this.store = new keymng.Store( "keymng" );
 
 	function requestHandle(event) {
 		var data = event.data;
@@ -23,7 +23,7 @@ keymng.Server.prototype.operationHandles = {
 		var params = event.data;
 		
 		var keyPair = this.crypto.generateKeyPair( params.algorithm, params.keySpec );
-//		this.store.put( params.alias, keyPair.privateKey );
+		this.store.put( params.alias, keyPair );
 	
 		var result = {
 				requestId : params.requestId,
