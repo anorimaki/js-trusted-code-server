@@ -1,1 +1,0 @@
-server = new keymng.Server();

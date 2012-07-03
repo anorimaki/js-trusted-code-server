@@ -2,19 +2,24 @@ var system = system || {};
 system.moduleLoader = system.moduleLoader || {};
 
 system.moduleLoader.load = function(name, where, loadingCallback) {
-	$.ajax({
-		url : "./modules/" + name + ".html",
-		context : document.body,
-		dataType : 'html',
-		success : function(data) {
-			$(where).append(data);
-			system.moduleLoader.loadScript( name, where, loadingCallback );
-			system.moduleLoader.loadCSS(name);
-		},
-		error : function(jqXHR, textStatus) {
-			$(where).append("<h1>Error loading " + name + "</h1>");
-		}
-	});
+	if ( where ) {
+		$.ajax({
+			url : "./modules/" + name + ".html",
+			context : document.body,
+			dataType : 'html',
+			success : function(data) {
+				$(where).append(data);
+				system.moduleLoader.loadScript( name, where, loadingCallback );
+				system.moduleLoader.loadCSS(name);
+			},
+			error : function(jqXHR, textStatus) {
+				$(where).append("<h1>Error loading " + name + "</h1>");
+			}
+		});
+		return;
+	}
+	system.moduleLoader.loadScript( name, null, loadingCallback );
+	system.moduleLoader.loadCSS(name);
 };
 
 
@@ -38,7 +43,7 @@ system.moduleLoader.loadScript = function( name, where, loadingCallback ) {
 			loadingCallback();
 		}
 		
-		if (window[name].init) {
+		if ( window[name] && window[name].init ) {
 			window[name].init( where );
 		}
 	};

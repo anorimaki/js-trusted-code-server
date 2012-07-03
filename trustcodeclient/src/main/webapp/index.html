@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-	<link rel="stylesheet" type="text/css" href="./css/ui-lightness/jquery-ui-1.8.21.custom.css" />
+	<link rel="stylesheet" type="text/css" href="./css/cupertino/jquery-ui-1.8.21.custom.css" />
 	
 	
 	<script type="text/javascript" src="./js/jquery-1.7.2.js"></script>
@@ -14,20 +14,10 @@
 </head>
 <body>
 	<script>
-		var getHost = function(href) {
-		    var l = document.createElement("a");
-		    l.href = href;
-		    var ret = l.protocol + '//' + l.host ;
-		    return ret;
-		};
-	
 		function init(){
-			system.moduleLoader.load("menuTabs","#tabs");
+			system.moduleLoader.load( "main", "#content", function() { main( "#content" ); } );
 		}
 		$(document).ready(init());
-
-		var serverUrl = 'http://localhost:8180/trustcodeserver/keymanager.html';
-		var keyManagerClient = new keymng.Client( getHost(serverUrl), serverUrl );
 	</script>
 	
 	<div id="content" align="center">
@@ -39,7 +29,7 @@
 				</div>
 				<hr>
 			</div>
-			<div id="tabs">
+			<div id="content">
 			</div>
 			<div id="footer">
 				<p>©2012</p>

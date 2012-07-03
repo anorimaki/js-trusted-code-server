@@ -7,7 +7,8 @@ function GenerateKeyPairForm( where, applyResult ) {
 	
 	var fillKeySizeNode = function() {
 		$( "option", keySizeNode ).remove();
-		$.each( that._keySizes[algorithmNode.val()], function(index, value) {
+		var algorithmSelected = algorithmNode.val();
+		$.each( that._keySizes[algorithmSelected], function(index, value) {
 			keySizeNode.append( "<option>" + value + "</option>" );
 		});
 	};
@@ -21,7 +22,7 @@ function GenerateKeyPairForm( where, applyResult ) {
 	$(this.where).dialog( {
 		autoOpen : false,
 		modal : true,
-		height: 300,
+		height: "auto",
 		width: 350,
 		buttons: {
 			Generate : function() {

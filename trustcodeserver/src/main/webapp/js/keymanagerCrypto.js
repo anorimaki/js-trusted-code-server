@@ -8,10 +8,16 @@ keymng.Crypto.prototype.generateKeyPair = function( algorithm, keySpec )  {
 	if ( algorithm != 'RSA' )
 		throw 'Invalid key generation algorithm: ' + algorithm;
 	
-	var rsa = new RSAKey();
-	rsa.generate( keySpec.length, '010001' );
+	var pvk = new RSAKey();
+	pvk.generate( keySpec.length, '10001' );
 
-	return rsa;
+	var pbk = new RSAKey();
+	pbk.setPublic( pvk.n.toString(16), '10001' );
+	
+	return {
+		privateKey : pvk,
+		publicKey : pbk
+	};
 };
 
 

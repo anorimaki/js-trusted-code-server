@@ -11,7 +11,7 @@ keymng.Server = function( source ) {
 		var handle = that.operationHandles[data.operation];
 		if ( handle === undefined )
 			throw "Invalid operation request: " + data.operation;
-		handle.call( that, data );
+		handle.call( that, event );
 	}
 	
 	window.addEventListener( 'message', requestHandle, false );
@@ -19,9 +19,18 @@ keymng.Server = function( source ) {
 
 
 keymng.Server.prototype.operationHandles = {
-	generate : function ( params ) {
+	generateKeyPair : function ( event ) {
+		var params = event.data;
+		
 		var keyPair = this.crypto.generateKeyPair( params.algorithm, params.keySpec );
-		this.store.put( params.alias, keyPair.privateKey );
+//		this.store.put( params.alias, keyPair.privateKey );
+	
+		var result = {
+				requestId : params.requestId,
+				publicKey : keyPair.publicKey
+			};
+		
+		event.source.postMessage( result, event.origin );
 	}
 };
 
