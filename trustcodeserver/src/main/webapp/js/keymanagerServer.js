@@ -27,7 +27,8 @@ keymng.Server.prototype.operationHandles = {
 	
 		var result = {
 				requestId : params.requestId,
-				publicKey : keyPair.publicKey
+				operation : "generateKeyPair",
+				publicKeyRef : keyPair.publicKey.toString()
 			};
 		
 		event.source.postMessage( result, event.origin );

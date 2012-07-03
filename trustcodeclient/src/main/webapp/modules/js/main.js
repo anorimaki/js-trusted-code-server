@@ -34,7 +34,7 @@ var main = function( where ) {
 	var tabLoaded = function() {
 		if ( --moduleCounter === 0 ) {
 			keyManager.setCallbacks( {
-				generatedKeyPair : keyManagementTab.generatedKeyPair
+				keyPairGenerated : keyManagementTab.keyPairGenerated
 			} );
 		}
 	};

@@ -1,5 +1,5 @@
 var keyManagement = function( where_, keyManager_, uiResources_ ) {
-	var KEY_PAIR_GENERATION_TIMEOUT = 2;		//in seconds
+	var KEY_PAIR_GENERATION_TIMEOUT = 20;		//in seconds
 	var keyManager = keyManager_;
 	var uiResources = uiResources_;
 	var where = where_;
@@ -47,7 +47,7 @@ var keyManagement = function( where_, keyManager_, uiResources_ ) {
 	system.moduleLoader.load( "generateKeyPairForm", formNode, generateKeyPairFormLoaded );
 	
 	return {
-		keyPairGenerated : function( requestId, publicKey ) {
+		keyPairGenerated : function( requestId, publicKeyRef ) {
 			if ( currentRequest.id !== requestId )
 				return;
 			
@@ -56,7 +56,7 @@ var keyManagement = function( where_, keyManager_, uiResources_ ) {
 			tableNode.append( "<tr>" +
 					"<td>" + currentRequest.parameters.alias + "</td>" +
 					"<td>" + currentRequest.parameters.algorithm + "</td>" + 
-					"<td>" + publicKey + "</td>" +
+					"<td>" + publicKeyRef + "</td>" +
 					"</tr>" );
 			
 			uiResources.appInfoMessageWindow.close();

@@ -52,6 +52,6 @@ keymng.Client.prototype._createFrame = function( keyManagerUrl ) {
 
 keymng.Client.prototype.responseHandles = {
 	generateKeyPair : function ( params ) {
-		this._callbacks.generatedKeyPair( params.requestId, params.publicKey );
+		this._callbacks.keyPairGenerated( params.requestId, params.publicKeyRef );
 	}
 };
