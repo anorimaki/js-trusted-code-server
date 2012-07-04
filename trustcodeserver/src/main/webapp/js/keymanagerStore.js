@@ -7,25 +7,41 @@ keymng.Store = function( application ) {
 };
 
 
-keymng.Store.prototype.put = function( alias, key ) {
-	stringify
+keymng.Store.prototype.put = function( alias, keyAlgorithm, keyPair ) {
+	if ( this.index[alias] )
+		throw "Key with alias '" + alias + "' exists"; 
+		
+	this.index[alias] = {
+			algorithm : keyAlgorithm
+		};
+	this.writeIndex();
+	
+	var localStorageKey = "key_" + alias;
+	localStorage.putItem( localStorageKey, JSON.stringify(keyPair) );
 };
 
 
 keymng.Store.prototype.get = function( alias ) {
-	var localStorageKey = this.getLocalStorageKey( alias );
+	var localStorageKey = "key_" + alias;
 	var valueStr = localStorage.getItem( localStorageKey );
 	return JSON.parse(valueStr);
 };
 
 
 keymng.Store.prototype.remove = function( alias ) {
-	var localStorageKey = this.getLocalStorageKey( alias );
+	if ( !this.index[alias] )
+		throw "Key with alias '" + alias + "' not exists"; 
+	
+	var localStorageKey = "key_" + alias;
 	localStorage.removeItem( localStorageKey );
 	delete this.index[alias];
 	this.writeIndex();
 };
 
+
+keymng.Store.prototype.getKeyInfos = function( alias ) {
+	return this.index;
+};
 
 
 keymng.Store.prototype.readIndex = function() {

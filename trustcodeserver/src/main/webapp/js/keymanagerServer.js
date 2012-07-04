@@ -23,15 +23,34 @@ keymng.Server.prototype.operationHandles = {
 		var params = event.data;
 		
 		var keyPair = this.crypto.generateKeyPair( params.algorithm, params.keySpec );
-		this.store.put( params.alias, keyPair );
+		this.store.put( params.alias, params.algorithm, keyPair );
 	
 		var result = {
 				requestId : params.requestId,
-				operation : "generateKeyPair",
 				publicKeyRef : keyPair.publicKey.toString()
 			};
 		
-		event.source.postMessage( result, event.origin );
+		event.source.postMessage( JSON.stringify(result), event.origin );
+	},
+	
+
+	getKeyInfos : function ( event ) {
+		var kInfos = this.store.getKeyInfos();
+		
+		var result = {
+				requestId : event.data.requestId,
+				keyInfos : {}
+			};
+		
+		for ( var alias in kInfos ) {
+			var keyPair =  this.store.get( alias );
+			result.keyInfos[alias] = {
+					algorithm : kInfos[alias].algorithm,
+					publicKeyRef : keyPair.publicKey.toString()
+				};
+		}
+		
+		event.source.postMessage( JSON.stringify(result), event.origin );
 	}
 };
 

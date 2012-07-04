@@ -31,22 +31,13 @@ var main = function( where ) {
 		system.moduleLoader.load( "errorDialog", undefined, errorDialogLoaded );
 	};
 			
-	var tabLoaded = function() {
-		if ( --moduleCounter === 0 ) {
-			keyManager.setCallbacks( {
-				keyPairGenerated : keyManagementTab.keyPairGenerated
-			} );
-		}
-	};
-	
 	var keyManagementLoaded = function() {
 		keyManagementTab = keyManagement( $("#keyManagementTab", tabsNode), keyManager, uiResources );
-		tabLoaded();
 	};
 	
 	iniKeyManager();
 	iniAppUIResources();
 	system.moduleLoader.load( "keyManagement", $("#keyManagementTab", tabsNode), keyManagementLoaded );
-	system.moduleLoader.load( "signature", $("#signatureTab", tabsNode), tabLoaded );
+	system.moduleLoader.load( "signature", $("#signatureTab", tabsNode) );
 	tabsNode.tabs();
 };

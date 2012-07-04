@@ -1,29 +1,79 @@
 var keyManagement = function( where_, keyManager_, uiResources_ ) {
-	var KEY_PAIR_GENERATION_TIMEOUT = 20;		//in seconds
 	var keyManager = keyManager_;
 	var uiResources = uiResources_;
 	var where = where_;
 	var formNode = $( ".generateKeyPairForm", where );
-	var currentRequest = undefined;
+	var tableNode = $( ".keyPairTable table tbody", where );
+	var currentAliases = {};
 	
-	var operationTimedOut = function() {
+	var addKey = function( alias, algorithm, publickeyRef ) {
+		tableNode.append( "<tr>" +
+				"<td>" + alias + "</td>" +
+				"<td>" + algorithm + "</td>" + 
+				"<td>" + publicKeyRef + "</td>" +
+				"</tr>" );
+		currentAliases[alias] = true;
+	};
+	
+	
+	var beginRemoteOperation  = function( message ) {
+		uiResources.appInfoMessageWindow.open( message, "Please, wait..." );
+	};
+	
+	
+	var endRemoteOperation = function() {
 		uiResources.appInfoMessageWindow.close();
-		uiResources.appErrorDialog.open( "Error", "Operation timeout" );
+	};
+	
+
+	var operationError = function( code ) {
+		uiResources.appInfoMessageWindow.close();
+		if ( code === keymng.Client.Errors.TIMEOUT ) {
+			uiResources.appErrorDialog.open( "Error", "Operation timeout" );
+		}
+		else {
+			uiResources.appErrorDialog.open( "Error", "Unknown error" );
+		}
+	};
+	
+	
+	var generateKeyPair = function( parameters ) {
+		beginRemoteOperation( "Generating key pair" );
+		
+		keyManager.generateKeyPair( parameters, { 
+				success : function(publicKeyRef) {
+					addKey( parameters.alias, parameters.algorithm, publicKeyRef );
+					endRemoteOperation();
+				},
+				
+				error: operationError 
+			});
+	};
+	
+	
+	var getCurrentKeys = function() {
+		beginRemoteOperation( "Getting current keys" );
+		keyManager.getKeyInfos( { 
+			success : function(keyInfos) {
+
+				for ( var alias in keyInfos ) {
+					addKey( alias, keyInfos[alias].algorithm, keyInfos[alias].publicKeyRef );
+				}
+				
+				endRemoteOperation();
+			},
+			
+			error: operationError 
+		});
 	};
 	
 	
 	var generateKeyPairFormLoaded = function() {
-		var form = new GenerateKeyPairForm( formNode, function( formResult ) {
-			uiResources.appInfoMessageWindow.open( "Generating key pair", "Please, wait..." );
-			var currentTimeOutId = window.setTimeout( operationTimedOut, KEY_PAIR_GENERATION_TIMEOUT * 1000 );
-			var currentRequestId = keyManager.generateKeyPair( formResult );
-			
-			currentRequest = {
-					id : currentRequestId,
-					parameters : formResult,
-					timeOutId : currentTimeOutId
-				};
-		});
+		var aliasChecker = function( alias ) {
+			return currentAliases[alias] === undefined;
+		};
+		
+		var form = new GenerateKeyPairForm( formNode, generateKeyPair, aliasChecker );
 		
 		var generateButton = $( ".generateButton", where );
 		generateButton.button();
@@ -32,7 +82,7 @@ var keyManagement = function( where_, keyManager_, uiResources_ ) {
 		});
 	};
 	
-	
+		// initialization code
 	$(".keyPairTable", where).append( "<table border='1' class='keyPairTable ui-widget ui-widget-content'>" +
 			"<thead>" +
 				"<tr class='ui-widget-header'>" +
@@ -44,24 +94,8 @@ var keyManagement = function( where_, keyManager_, uiResources_ ) {
 			"<tbody></tbody>" +
 		"</table>" );
 	
-	system.moduleLoader.load( "generateKeyPairForm", formNode, generateKeyPairFormLoaded );
+	getCurrentKeys();
 	
-	return {
-		keyPairGenerated : function( requestId, publicKeyRef ) {
-			if ( currentRequest.id !== requestId )
-				return;
-			
-			var tableNode = $( ".keyPairTable table tbody", where );
-			
-			tableNode.append( "<tr>" +
-					"<td>" + currentRequest.parameters.alias + "</td>" +
-					"<td>" + currentRequest.parameters.algorithm + "</td>" + 
-					"<td>" + publicKeyRef + "</td>" +
-					"</tr>" );
-			
-			uiResources.appInfoMessageWindow.close();
-			window.clearTimeout( currentRequest.timeOutId );
-		}
-	};
+	system.moduleLoader.load( "generateKeyPairForm", formNode, generateKeyPairFormLoaded );
 };
 
