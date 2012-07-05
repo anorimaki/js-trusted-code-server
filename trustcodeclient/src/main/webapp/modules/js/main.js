@@ -3,6 +3,7 @@ var main = function( where ) {
 	var items = tabsNode.children( "div" );
 	var moduleCounter = items.size();
 	var keyManagementTab = undefined;
+	var signatureTab = undefined;
 	var keyManager = undefined;
 	var uiResources = {};
 	
@@ -31,13 +32,17 @@ var main = function( where ) {
 		system.moduleLoader.load( "errorDialog", undefined, errorDialogLoaded );
 	};
 			
-	var keyManagementLoaded = function() {
+	var keyManagementModuleLoaded = function() {
 		keyManagementTab = keyManagement( $("#keyManagementTab", tabsNode), keyManager, uiResources );
+	};
+	
+	var signatureModuleLoaded = function() {
+		signatureTab = keyManagement( $("#signatureTab", tabsNode), keyManager, uiResources );
 	};
 	
 	iniKeyManager();
 	iniAppUIResources();
-	system.moduleLoader.load( "keyManagement", $("#keyManagementTab", tabsNode), keyManagementLoaded );
-	system.moduleLoader.load( "signature", $("#signatureTab", tabsNode) );
+	system.moduleLoader.load( "keyManagement", $("#keyManagementTab", tabsNode), keyManagementModuleLoaded );
+	system.moduleLoader.load( "signature", $("#signatureTab", tabsNode), signatureModuleLoaded );
 	tabsNode.tabs();
 };

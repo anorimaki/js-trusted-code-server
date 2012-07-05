@@ -3,10 +3,11 @@ var keyManagement = function( where_, keyManager_, uiResources_ ) {
 	var uiResources = uiResources_;
 	var where = where_;
 	var formNode = $( ".generateKeyPairForm", where );
-	var tableNode = $( ".keyPairTable table tbody", where );
+	var tableNode = undefined;
 	var currentAliases = {};
+	var keyManagerErrorHandles = {};
 	
-	var addKey = function( alias, algorithm, publickeyRef ) {
+	var addKey = function( alias, algorithm, publicKeyRef ) {
 		tableNode.append( "<tr>" +
 				"<td>" + alias + "</td>" +
 				"<td>" + algorithm + "</td>" + 
@@ -25,15 +26,24 @@ var keyManagement = function( where_, keyManager_, uiResources_ ) {
 		uiResources.appInfoMessageWindow.close();
 	};
 	
+	
+	var initKeyManagerErrorHandles = function() {
+		keyManagerErrorHandles[keymng.Client.Errors.TIMEOUT] = function() {
+				uiResources.appErrorDialog.open( "Error", "Operation timeout" );
+			};
+		keyManagerErrorHandles[keymng.Client.Errors.SERVER_ERROR] = function( error ) {
+				var msg = error.message;
+				if ( error.stack ) {
+					msg += "\n" + error.stack;
+				}
+				uiResources.appErrorDialog.open( "Error", "Server error: " + msg );
+			};	
+	};
+	
 
-	var operationError = function( code ) {
+	var keyManagerErrorHandle = function( code, parameters ) {
 		uiResources.appInfoMessageWindow.close();
-		if ( code === keymng.Client.Errors.TIMEOUT ) {
-			uiResources.appErrorDialog.open( "Error", "Operation timeout" );
-		}
-		else {
-			uiResources.appErrorDialog.open( "Error", "Unknown error" );
-		}
+		keyManagerErrorHandles[code]( parameters );
 	};
 	
 	
@@ -46,30 +56,33 @@ var keyManagement = function( where_, keyManager_, uiResources_ ) {
 					endRemoteOperation();
 				},
 				
-				error: operationError 
+				error: keyManagerErrorHandle 
 			});
 	};
 	
 	
 	var getCurrentKeys = function() {
 		beginRemoteOperation( "Getting current keys" );
+		
 		keyManager.getKeyInfos( { 
-			success : function(keyInfos) {
-
-				for ( var alias in keyInfos ) {
-					addKey( alias, keyInfos[alias].algorithm, keyInfos[alias].publicKeyRef );
-				}
-				
-				endRemoteOperation();
-			},
-			
-			error: operationError 
-		});
+				success : function(keyInfos) {
+		
+					for ( var alias in keyInfos ) {
+						addKey( alias, keyInfos[alias].algorithm, keyInfos[alias].publicKeyRef );
+					}
+						
+					endRemoteOperation();
+				},
+					
+				error: keyManagerErrorHandle 
+			});
 	};
 	
 	
 	var generateKeyPairFormLoaded = function() {
 		var aliasChecker = function( alias ) {
+			if ( (alias===undefined) || (alias.length===0) )
+				return false;
 			return currentAliases[alias] === undefined;
 		};
 		
@@ -83,6 +96,8 @@ var keyManagement = function( where_, keyManager_, uiResources_ ) {
 	};
 	
 		// initialization code
+	initKeyManagerErrorHandles();
+	
 	$(".keyPairTable", where).append( "<table border='1' class='keyPairTable ui-widget ui-widget-content'>" +
 			"<thead>" +
 				"<tr class='ui-widget-header'>" +
@@ -93,6 +108,8 @@ var keyManagement = function( where_, keyManager_, uiResources_ ) {
 			"</thead>" +
 			"<tbody></tbody>" +
 		"</table>" );
+	
+	tableNode = $( ".keyPairTable table tbody", where );
 	
 	getCurrentKeys();
 	

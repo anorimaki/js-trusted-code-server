@@ -1,9 +1,6 @@
 var keymng = keymng || {};
 
 keymng.Crypto = function() {
-	RSAKey.prototype.toString = function() {
-		return this.n.toString(16).substr( 0, 40 );
-	};
 };	
 
 

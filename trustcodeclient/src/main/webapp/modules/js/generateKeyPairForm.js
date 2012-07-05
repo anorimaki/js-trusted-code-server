@@ -3,9 +3,9 @@ function GenerateKeyPairForm( where, applyResult, aliasChecher_ ) {
 
 	var aliasChecher = aliasChecher_;
 	var formNode = $( "form", where );
-	var aliasNode = $('select[name="alias"]', formNode);
-	var algorithmNode = $('select[name="algorithm"]', formNode);
-	var keySizeNode = $('select[name="keySize"]', formNode);
+	var aliasNode = $('[name="alias"]', formNode);
+	var algorithmNode = $('[name="algorithm"]', formNode);
+	var keySizeNode = $('[name="keySize"]', formNode);
 	var allFields = $( [] ).add( aliasNode ).add( algorithmNode ).add( keySizeNode );
 	
 	var fillKeySizeNode = function() {
@@ -21,7 +21,7 @@ function GenerateKeyPairForm( where, applyResult, aliasChecher_ ) {
 		
 		var aliasValue = aliasNode.val();
 		if ( !aliasChecher( aliasValue ) ) {
-			aliasNode.addCladd( "ui-state-error" );
+			aliasNode.addClass( "ui-state-error" );
 			return;
 		}
 		

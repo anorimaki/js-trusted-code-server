@@ -7,6 +7,7 @@ ui.ErrorDialog = function () {
 	this.divNode.dialog( {
 		autoOpen : false,
 		height: "auto",
+		width : 500,
 		modal: true,
 		closeOnEscape : false,
 		resizable : false,

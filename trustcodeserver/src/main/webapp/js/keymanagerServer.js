@@ -11,10 +11,33 @@ keymng.Server = function( source ) {
 		var handle = that.operationHandles[data.operation];
 		if ( handle === undefined )
 			throw "Invalid operation request: " + data.operation;
-		handle.call( that, event );
+		
+		try {
+			handle.call( that, event );
+		}
+		catch( e ) {
+			var msg = e.message ? e.message : e.toString();
+			var result = {
+					requestId : data.requestId,
+					error : {
+						message : msg
+					}
+				};
+			if ( e.stack )
+				result.error.stack = e.stack;
+			
+			event.source.postMessage( JSON.stringify(result), event.origin );
+		}
 	}
 	
 	window.addEventListener( 'message', requestHandle, false );
+};
+
+
+keymng.Server.prototype._getKeyRefs = {
+	RSA : function( publicKey ) {
+		return publicKey.n.toString(16).substr( 0, 40 );
+	}
 };
 
 
@@ -27,7 +50,7 @@ keymng.Server.prototype.operationHandles = {
 	
 		var result = {
 				requestId : params.requestId,
-				publicKeyRef : keyPair.publicKey.toString()
+				publicKeyRef : this._getKeyRefs[params.algorithm]( keyPair.publicKey )
 			};
 		
 		event.source.postMessage( JSON.stringify(result), event.origin );
@@ -44,9 +67,11 @@ keymng.Server.prototype.operationHandles = {
 		
 		for ( var alias in kInfos ) {
 			var keyPair =  this.store.get( alias );
+			var algorithm = kInfos[alias].algorithm;
+			var keyRef = this._getKeyRefs[algorithm]( keyPair.publicKey );
 			result.keyInfos[alias] = {
-					algorithm : kInfos[alias].algorithm,
-					publicKeyRef : keyPair.publicKey.toString()
+					algorithm : algorithm,
+					publicKeyRef : keyRef
 				};
 		}
 		

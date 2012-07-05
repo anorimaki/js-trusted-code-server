@@ -24,7 +24,8 @@ keymng.Client = function( origin, keyManagerUrl, defaultErrorCallback ) {
 
 
 keymng.Client.Errors = {
-	TIMEOUT : 1
+	TIMEOUT : "TIMEOUT",
+	SERVER_ERROR : "SERVER_ERROR"
 };
 
 
@@ -72,14 +73,26 @@ keymng.Client.prototype._beginRequest = function( operationType, requestTimeout,
 };
 
 
+keymng.Client.prototype._callErrorCallback = function( requestInfo, code, error ) {
+	var errorCallback = this.defaultErrorCallback;
+	if ( typeof requestInfo.callback === 'object' ) {
+		errorCallback = requestInfo.callback.error;
+	} 
+	
+	errorCallback( code, error );
+};
+
+
 keymng.Client.prototype._endRequest = function( requestId, result ) {
 	var requestInfo = this._activeRequests[requestId];
 	delete this._activeRequests[requestId];
 	
 	window.clearTimeout( requestInfo.timeOutId );
 
-	if ( result.error )
-		throw result.error;
+	if ( result.error ) {
+		this._callErrorCallback( requestInfo, keymng.Client.Errors.SERVER_ERROR, result.error );
+		return;
+	}
 	
 	var handle = this.successResponseHandles[requestInfo.operation];
 	if ( handle === undefined )
@@ -98,14 +111,8 @@ keymng.Client.prototype._requestTimedOut = function( requestId ) {
 	var requestInfo = this._activeRequests[requestId];
 	delete this._activeRequests[requestId];
 	
-	var errorCallback = this.defaultErrorCallback;
-	if ( typeof requestInfo.callback === 'object' ) {
-		errorCallback = requestInfo.callback.error;
-	} 
-	
-	errorCallback( keymng.Client.Errors.TIMEOUT );
+	this._callErrorCallback( requestInfo, keymng.Client.Errors.TIMEOUT );
 };
-
 
 
 keymng.Client.prototype.successResponseHandles = {
