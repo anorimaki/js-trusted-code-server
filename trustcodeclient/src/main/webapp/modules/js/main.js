@@ -1,13 +1,11 @@
 var main = function( where ) {
 	var tabsNode = $( ".tabs", where );
-	var items = tabsNode.children( "div" );
-	var moduleCounter = items.size();
 	var keyManagementTab = undefined;
 	var signatureTab = undefined;
 	var keyManager = undefined;
 	var uiResources = {};
 	
-	var iniKeyManager = function() {
+	var iniKeyManager = function( callback ) {
 		var getHost = function(href) {
 		    var l = document.createElement("a");
 		    l.href = href;
@@ -16,7 +14,7 @@ var main = function( where ) {
 		};
 		
 		var serverUrl = 'http://localhost:8180/trustcodeserver/keymanager.html';
-		keyManager = new keymng.Client( getHost(serverUrl), serverUrl );
+		keyManager = new keymng.Client( getHost(serverUrl), serverUrl, callback );
 	};
 	
 	var iniAppUIResources = function() {
@@ -37,12 +35,15 @@ var main = function( where ) {
 	};
 	
 	var signatureModuleLoaded = function() {
-		signatureTab = keyManagement( $("#signatureTab", tabsNode), keyManager, uiResources );
+		signatureTab = signature( $("#signatureTab", tabsNode), keyManager, uiResources );
 	};
 	
-	iniKeyManager();
+	var keyManagerLoaded = function() {
+		system.moduleLoader.load( "keyManagement", $("#keyManagementTab", tabsNode), keyManagementModuleLoaded );
+		system.moduleLoader.load( "signature", $("#signatureTab", tabsNode), signatureModuleLoaded );
+	};
+	
+	iniKeyManager( keyManagerLoaded );
 	iniAppUIResources();
-	system.moduleLoader.load( "keyManagement", $("#keyManagementTab", tabsNode), keyManagementModuleLoaded );
-	system.moduleLoader.load( "signature", $("#signatureTab", tabsNode), signatureModuleLoaded );
 	tabsNode.tabs();
 };

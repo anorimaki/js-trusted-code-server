@@ -1,14 +1,14 @@
 var keymng = keymng || {};
 
-keymng.Client = function( origin, keyManagerUrl, defaultErrorCallback ) {
+keymng.Client = function( origin, keyManagerUrl, initializedCallback ) {
 	var that = this;
 	
 	this.DEFAULT_TIMEOUT = 10;
-	this._createFrame( keyManagerUrl );
+	this._createFrame( keyManagerUrl, initializedCallback );
 	this._origin = origin;
 	this._activeRequests = {};
 	this._requestId = 0;
-	this._defaultErrorCallback = defaultErrorCallback;
+	this._defaultErrorCallback = undefined;
 	
 	function requestHandle(event) {
 		if ( event.origin !== that._origin )
@@ -29,6 +29,11 @@ keymng.Client.Errors = {
 };
 
 
+keymng.Client.prototype.setDefaultErrorCallback = function( errorCallback ) {
+	this._defaultErrorCallback = errorCallback;
+};
+
+
 keymng.Client.prototype.generateKeyPair = function( parameters, callback ) {
 	this._beginRequest( 'generateKeyPair', parameters.timeout, callback );
 	var operation = {
@@ -36,7 +41,7 @@ keymng.Client.prototype.generateKeyPair = function( parameters, callback ) {
 		requestId : this._requestId,
 		alias : parameters.alias,
 		algorithm : parameters.algorithm,
-		keySpec : parameters.keySpec
+		keySpec : parameters.keySpec,
 	};
 	this._iframe.contentWindow.postMessage( operation, this._origin );
 };
@@ -46,7 +51,7 @@ keymng.Client.prototype.getKeyInfos = function( callback ) {
 	this._beginRequest( 'getKeyInfos', undefined, callback );
 	var operation = {
 		operation : 'getKeyInfos',
-		requestId : this._requestId
+		requestId : this._requestId,
 	};
 	this._iframe.contentWindow.postMessage( operation, this._origin );
 };
@@ -68,16 +73,25 @@ keymng.Client.prototype._beginRequest = function( operationType, requestTimeout,
 	this._activeRequests[this._requestId] = {
 			operation : operationType,
 			callback : resultCallback,
-			timeOutId : currentTimeOutId
+			timeOutId : currentTimeOutId,
 		};
 };
 
 
 keymng.Client.prototype._callErrorCallback = function( requestInfo, code, error ) {
-	var errorCallback = this.defaultErrorCallback;
+	var errorCallback = this._defaultErrorCallback;
 	if ( typeof requestInfo.callback === 'object' ) {
 		errorCallback = requestInfo.callback.error;
 	} 
+	
+	if ( errorCallback === undefined ) {
+		var msg = "Error " + code + "." ;
+		if ( error ) {
+			msg += "Details: ";
+			msg += (error.message) ? error.message : error.toString();
+		}
+		throw msg;
+	}
 	
 	errorCallback( code, error );
 };
@@ -119,17 +133,19 @@ keymng.Client.prototype.successResponseHandles = {
 	generateKeyPair : function ( clientCallback, result ) {
 		clientCallback( result.publicKeyRef );
 	},
+	
 	getKeyInfos : function ( clientCallback, result ) {
 		clientCallback( result.keyInfos );
 	}
 };
 
 
-keymng.Client.prototype._createFrame = function( keyManagerUrl ) {
+keymng.Client.prototype._createFrame = function( keyManagerUrl, initializedCallback ) {
 	this._iframe = document.createElement("iframe");
 	this._iframe.style.cssText = "position:absolute;width:1px;height:1px;left:-9999px;";
 	this._iframe.src = keyManagerUrl;
 	document.body.appendChild(this._iframe);
+	$(this._iframe).load(initializedCallback);
 };
 
 
