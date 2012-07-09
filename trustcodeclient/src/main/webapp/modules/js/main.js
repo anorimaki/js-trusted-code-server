@@ -3,33 +3,8 @@ var main = function( where ) {
 	var keyManagementTab = undefined;
 	var signatureTab = undefined;
 	var keyManager = undefined;
-	var uiResources = {};
+	var uiResources = undefined;
 	
-	var iniKeyManager = function( callback ) {
-		var getHost = function(href) {
-		    var l = document.createElement("a");
-		    l.href = href;
-		    var ret = l.protocol + '//' + l.host ;
-		    return ret;
-		};
-		
-		var serverUrl = 'http://localhost:8180/trustcodeserver/keymanager.html';
-		keyManager = new keymng.Client( getHost(serverUrl), serverUrl, callback );
-	};
-	
-	var iniAppUIResources = function() {
-		var messageWindowLoaded = function() {
-			uiResources.appInfoMessageWindow = new ui.MessageWindow();
-		};
-		
-		var errorDialogLoaded = function() {
-			uiResources.appErrorDialog = new ui.ErrorDialog();
-		};
-		
-		system.moduleLoader.load( "messageWindow", undefined, messageWindowLoaded );
-		system.moduleLoader.load( "errorDialog", undefined, errorDialogLoaded );
-	};
-			
 	var keyManagementModuleLoaded = function() {
 		keyManagementTab = keyManagement( $("#keyManagementTab", tabsNode), keyManager, uiResources );
 	};
@@ -43,7 +18,24 @@ var main = function( where ) {
 		system.moduleLoader.load( "signature", $("#signatureTab", tabsNode), signatureModuleLoaded );
 	};
 	
-	iniKeyManager( keyManagerLoaded );
-	iniAppUIResources();
+	var iniKeyManager = function() {
+		var getHost = function(href) {
+		    var l = document.createElement("a");
+		    l.href = href;
+		    var ret = l.protocol + '//' + l.host ;
+		    return ret;
+		};
+		
+		var serverUrl = 'http://localhost:8180/trustcodeserver/keymanager.html';
+		keyManager = new keymng.CachedClient( getHost(serverUrl), serverUrl, keyManagerLoaded );
+	};
+	
+	var uiResourcesLoaded = function() {
+		uiResources = uiAppResources();
+		iniKeyManager();
+	};
+	
+	
+	system.moduleLoader.load( "uiAppResources", undefined, uiResourcesLoaded );
 	tabsNode.tabs();
 };

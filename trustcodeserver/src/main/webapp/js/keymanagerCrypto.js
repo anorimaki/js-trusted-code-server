@@ -21,5 +21,26 @@ keymng.Crypto.prototype.generateKeyPair = function( algorithm, keySpec )  {
 };
 
 
+keymng.Crypto.prototype.sign = function( algorithm, pvk, data )  {
+	var signatureAlgorithm = this.signatureAlgorithms[algorithm];
+	
+	if ( signatureAlgorithm === undefined )
+		throw 'Invalid signature algorithm: ' + algorithm;
+	
+	return pvk.signString( data, signatureAlgorithm.hashAlgorithm );
+};
+
+
+keymng.Crypto.prototype.signatureAlgorithms = {
+	sha1WithRSA : {
+		asymmetricAlgorithm : "RSA",
+		hashAlgorithm : "sha1"
+	},
+	
+	sha256WithRSA : {
+		asymmetricAlgorithm : "RSA",
+		hashAlgorithm : "sha256"
+	}
+};
 
 

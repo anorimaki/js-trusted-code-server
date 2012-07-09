@@ -57,6 +57,19 @@ keymng.Client.prototype.getKeyInfos = function( callback ) {
 };
 
 
+keymng.Client.prototype.sign = function( parameters, callback ) {
+	this._beginRequest( 'sign', parameters.timeout, callback );
+	var operation = {
+		operation : 'sign',
+		requestId : this._requestId,
+		alias : parameters.alias,
+		algorithm : parameters.algorithm,
+		data : parameters.data,
+	};
+	this._iframe.contentWindow.postMessage( operation, this._origin );
+};
+
+
 keymng.Client.prototype._beginRequest = function( operationType, requestTimeout, resultCallback ) {
 	var that = this;
 	

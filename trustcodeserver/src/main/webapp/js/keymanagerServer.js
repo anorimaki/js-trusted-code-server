@@ -76,6 +76,22 @@ keymng.Server.prototype.operationHandles = {
 		}
 		
 		event.source.postMessage( JSON.stringify(result), event.origin );
+	},
+	
+	
+	sign : function( event ) {
+		var params = event.data;
+		
+		var keyPair = this.store.get( params.alias );
+		
+		var signature = this.crypto.sign( params.algorithm, keyPair.privateKey, params.data );
+		
+		var result = {
+				requestId : event.data.requestId,
+				signature : signature
+			};
+		
+		event.source.postMessage( JSON.stringify(result), event.origin );
 	}
 };
 
