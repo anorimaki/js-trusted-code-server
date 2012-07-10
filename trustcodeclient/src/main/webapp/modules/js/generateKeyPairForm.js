@@ -8,6 +8,8 @@ function GenerateKeyPairForm( where, applyResult, aliasChecher_ ) {
 	var keySizeNode = $('[name="keySize"]', formNode);
 	var allFields = $( [] ).add( aliasNode ).add( algorithmNode ).add( keySizeNode );
 	
+	this.where = where;
+	
 	var fillKeySizeNode = function() {
 		$( "option", keySizeNode ).remove();
 		var algorithmSelected = algorithmNode.val();
@@ -42,9 +44,16 @@ function GenerateKeyPairForm( where, applyResult, aliasChecher_ ) {
 	algorithmNode.change( fillKeySizeNode );
 	fillKeySizeNode();
 	
-	this.where = where;
+	var maxLabelSize = 0;
+	$("label", where).each(function(){  
+        if ($(this).width() > maxLabelSize)  
+        	maxLabelSize = $(this).width();     
+	});  
 	
-	$(this.where).dialog( {
+//	$("label", where).width(maxLabelSize);
+	
+	$(where).dialog( {
+		title : "Generate Key Pair",
 		autoOpen : false,
 		modal : true,
 		height: "auto",

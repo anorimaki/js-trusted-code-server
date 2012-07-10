@@ -7,24 +7,17 @@ var signature = function( where_, keyManager_, uiResources_ ) {
 	var signatureButtonNode = $('button[name="sign"]', where); 
 	var keyListNode = $( '[name="keyList"]', where );
 	
-	var setKeyList = function( keyInfos ) {
-		$( "option", keyListNode ).remove();
-		for ( var alias in keyInfos ) {
-			keyListNode.append( "<option>" + alias + "</option>" );
-		}	
+	
+	var addKeyTokeyList = function( alias ) {
+		keyListNode.append( "<option>" + alias + "</option>" );
 	};
 	
 	
-	var fillKeyListNode = function() {
-		uiResources.beginRemoteOperation( "Getting current keys" );
-		
-		keyManager.getKeyInfos( {
-				success : function( keyInfos ) {
-					setKeyList( keyInfos );
-					uiResources.successRemoteOperation();
-				},
-				error : uiResources.errorRemoteOperation
-			} );
+	var setKeyList = function( keyInfos ) {
+		$( "option", keyListNode ).remove();
+		for ( var alias in keyInfos ) {
+			addKeyTokeyList( alias );
+		}	
 	};
 	
 	
@@ -49,11 +42,20 @@ var signature = function( where_, keyManager_, uiResources_ ) {
 			} );
 	};
 	
-	fillKeyListNode();
 	
 	signatureButtonNode.button();
 	signatureButtonNode.click( signaturePushed );
 	
-	
 	dataNode.val( "Sample text" );
+	
+	return {
+		keysGot : function( keysInfo ) {
+			setKeyList( keysInfo );
+		},
+		
+		keyPairGenerated : function( keyInfo ) {
+			addKeyTokeyList( keyInfo.alias );
+		}
+	};
+	
 };

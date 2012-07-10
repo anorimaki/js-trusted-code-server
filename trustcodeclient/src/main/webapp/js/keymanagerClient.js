@@ -149,6 +149,10 @@ keymng.Client.prototype.successResponseHandles = {
 	
 	getKeyInfos : function ( clientCallback, result ) {
 		clientCallback( result.keyInfos );
+	},
+	
+	sign : function( clientCallback, result ) {
+		clientCallback( result.signature );
 	}
 };
 

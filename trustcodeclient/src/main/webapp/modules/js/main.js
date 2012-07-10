@@ -6,15 +6,21 @@ var main = function( where ) {
 	var uiResources = undefined;
 	
 	var keyManagementModuleLoaded = function() {
-		keyManagementTab = keyManagement( $("#keyManagementTab", tabsNode), keyManager, uiResources );
+		var notificationEvents = {
+				onGetKeys : signatureTab.keysGot,
+				onGenerateKeyPair : signatureTab.keyPairGenerated
+			};
+		
+		keyManagementTab = keyManagement( $("#keyManagementTab", tabsNode), keyManager, 
+										uiResources, notificationEvents );
 	};
 	
 	var signatureModuleLoaded = function() {
 		signatureTab = signature( $("#signatureTab", tabsNode), keyManager, uiResources );
+		system.moduleLoader.load( "keyManagement", $("#keyManagementTab", tabsNode), keyManagementModuleLoaded );
 	};
 	
 	var keyManagerLoaded = function() {
-		system.moduleLoader.load( "keyManagement", $("#keyManagementTab", tabsNode), keyManagementModuleLoaded );
 		system.moduleLoader.load( "signature", $("#signatureTab", tabsNode), signatureModuleLoaded );
 	};
 	
@@ -27,6 +33,8 @@ var main = function( where ) {
 		};
 		
 		var serverUrl = 'http://localhost:8180/trustcodeserver/keymanager.html';
+	//	var serverUrl = 'http://trustcodeserver-anorimaki.rhcloud.com/keymanager.html';
+		
 		keyManager = new keymng.CachedClient( getHost(serverUrl), serverUrl, keyManagerLoaded );
 	};
 	

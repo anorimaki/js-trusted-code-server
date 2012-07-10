@@ -1,10 +1,11 @@
-var keyManagement = function( where_, keyManager_, uiResources_ ) {
+var keyManagement = function( where_, keyManager_, uiResources_, eventHandles_ ) {
 	var keyManager = keyManager_;
 	var uiResources = uiResources_;
 	var where = where_;
 	var formNode = $( ".generateKeyPairForm", where );
 	var tableNode = undefined;
 	var currentAliases = {};
+	var eventHandles = eventHandles_;
 	
 	var addKey = function( alias, algorithm, publicKeyRef ) {
 		tableNode.append( "<tr>" +
@@ -23,6 +24,14 @@ var keyManagement = function( where_, keyManager_, uiResources_ ) {
 				success : function(publicKeyRef) {
 					addKey( parameters.alias, parameters.algorithm, publicKeyRef );
 					uiResources.successRemoteOperation();
+					
+					if ( eventHandles && eventHandles.onGenerateKeyPair ) {
+						eventHandles.onGenerateKeyPair( {
+								alias : parameters.alias,
+								algorithm : parameters.algorithm,
+								publicKeyRef : publicKeyRef
+							} );
+					}
 				},
 				
 				error: uiResources.errorRemoteOperation
@@ -39,6 +48,10 @@ var keyManagement = function( where_, keyManager_, uiResources_ ) {
 						addKey( alias, keyInfos[alias].algorithm, keyInfos[alias].publicKeyRef );
 					}	
 					uiResources.successRemoteOperation();
+					
+					if ( eventHandles && eventHandles.onGetKeys ) {
+						eventHandles.onGetKeys( keyInfos );
+					}
 				},
 					
 				error: uiResources.errorRemoteOperation 

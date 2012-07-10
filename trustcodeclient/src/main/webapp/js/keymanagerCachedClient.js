@@ -25,9 +25,11 @@ keymng.CachedClient.prototype.addKey = function( alias, algorithm, publicKeyRef 
 
 
 keymng.CachedClient.prototype.generateKeyPair = function( parameters, userCallback ) {
+	var that = this;
+	
 	var cacheCallback = {
 			success : function(publicKeyRef) {
-				addKey( parameters.alias, parameters.algorithm, publicKeyRef );
+				that.addKey( parameters.alias, parameters.algorithm, publicKeyRef );
 				userCallback.success( publicKeyRef );
 			}
 		};
